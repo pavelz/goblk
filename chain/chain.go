@@ -23,7 +23,12 @@ func NewChainer(previous string, from string, to string, amount int) Chainer{
 }
 
 func calcHexBlock(block Chainer) string {
-    json_block, _ := json.Marshal(block)
+        acopy := block
+        acopy.Checksum = ""
+        acopy.head = nil
+        acopy.tail = nil
+        acopy.head = nil
+    json_block, _ := json.Marshal(acopy)
     hash := md5.Sum([]byte(json_block))
     text := hex.EncodeToString(hash[:])
     return  text
@@ -34,13 +39,7 @@ func calcHexBlock(block Chainer) string {
 func ValidateChain(chain *Chainer) (string, *Chainer) {
     next := chain
     for true{
-        acopy := *next
-        acopy.Checksum = ""
-        acopy.head = nil
-        acopy.tail = nil
-        acopy.head = nil
-        hex_check := calcHexBlock(acopy)
-
+        hex_check := calcHexBlock(*next)
         if hex_check != next.Checksum {
             return hex_check, next
         }
