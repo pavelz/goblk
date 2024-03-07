@@ -28,20 +28,50 @@ func calcHexBlock(block Chainer) string {
         acopy.head = nil
         acopy.tail = nil
         acopy.head = nil
+
     json_block, _ := json.Marshal(acopy)
     hash := md5.Sum([]byte(json_block))
     text := hex.EncodeToString(hash[:])
     return  text
 }
 
+func getNakedText(block Chainer) string{
+        acopy := block
+        acopy.Checksum = ""
+        acopy.head = nil
+        acopy.tail = nil
+        acopy.head = nil
+
+    json_block, _ := json.Marshal(acopy)
+
+    return string(json_block)
+}
+
+func getTextAllBlocks(block Chainer) string{
+    text_block := ""
+    cursor := &block;
+    for true {
+        text_block += getNakedText(*cursor)
+    }
+    return ""
+}
+
 // returns pointer to object that failed checksum check.
 // todo: cumilative hash hex sums
+// how to telescope in
 func ValidateChain(chain *Chainer) (string, *Chainer) {
-    next := chain
+    next:= chain
+    var prev *Chainer = nil
     for true{
         hex_check := calcHexBlock(*next)
         if hex_check != next.Checksum {
             return hex_check, next
+        }
+
+        // calculate cumilitive checksum
+        // shallow check - checksums of checksums
+        if prev != nil {
+            
         }
 
         next = next.next
