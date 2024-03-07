@@ -53,7 +53,7 @@ func getTextAllBlocks(block Chainer) string{
     for true {
         text_block += getNakedText(*cursor)
     }
-    return ""
+    return text_block
 }
 
 // returns pointer to object that failed checksum check.
