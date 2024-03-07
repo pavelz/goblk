@@ -29,7 +29,6 @@ func calcHexBlock(block Chainer) string {
     return  text
 }
 
-
 // returns pointer to object that failed checksum check.
 // todo: cumilative hash hex sums
 func ValidateChain(chain *Chainer) (string, *Chainer) {
@@ -41,11 +40,15 @@ func ValidateChain(chain *Chainer) (string, *Chainer) {
         acopy.tail = nil
         acopy.head = nil
         hex_check := calcHexBlock(acopy)
+
         if hex_check != next.Checksum {
             return hex_check, next
         }
+
         next = next.next
-        break
+        if next.next == nil {
+            break
+        }
     }
     return "", nil
 }
