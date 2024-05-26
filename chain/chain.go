@@ -1,9 +1,10 @@
 package chain
 
 import (
-    "encoding/json"
-    "crypto/md5"
-    "encoding/hex"
+	"crypto/md5"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
 )
 
 type Chainer struct {
@@ -19,6 +20,7 @@ type Chainer struct {
 }
 
 func NewChainer(previous string, from string, to string, amount int) Chainer{
+    fmt.Println("WHAT")
     c := Chainer{ Previous: previous, From: from, To: to, Amount: amount}
     c.Checksum = calcHexBlock(c)
     return c
@@ -45,21 +47,25 @@ func (c Chainer) Hey(){
 }
 
 func calcHexBlock(block Chainer) string {
-        acopy := block
-        acopy.Checksum = ""
-        acopy.head = nil
-        acopy.tail = nil
-        acopy.head = nil
-        all_text := getTextAllBlocks(*block.prev)
+    acopy := block
+    acopy.Checksum = ""
+    acopy.head = nil
+    acopy.tail = nil
+    acopy.head = nil
+    all_text := ""
+    if(block.prev != nil){
+        all_text = getTextAllBlocks(*block.prev)
+    }
     all_text_string := string(all_text)
-    
+
     json_block, _ := json.Marshal(acopy)
     json_block_string := string(json_block)
+    fmt.Printf("\na %s j %s\n", all_text_string, json_block_string)
     reply := all_text_string + json_block_string
 
     hash := md5.Sum([]byte(reply))
     text := hex.EncodeToString(hash[:])
-    
+
     return  text
 }
 
