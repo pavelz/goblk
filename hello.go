@@ -1,12 +1,18 @@
 package main
 
-import ("fmt"
-    "crypto/md5"
-    "encoding/hex"
+import (
+	"gofmt/chain"
+	"crypto/md5"
+	"encoding/hex"
+	"fmt"
 )
-func main() {
-    hash := md5.Sum([]byte("hex me"))
-    text := hex.EncodeToString(hash[:])
 
-    fmt.Printf("Hello, World! %s\n", text)
+func main() {
+	hash := md5.Sum([]byte("hex me"))
+	text := hex.EncodeToString(hash[:])
+	a := chain.NewChainer("", "", "",0)
+	a.Hey()
+
+
+	fmt.Printf("Hello, World! %s\n", text)
 }

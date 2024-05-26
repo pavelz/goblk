@@ -1,4 +1,5 @@
 package chain
+
 import (
     "encoding/json"
     "crypto/md5"
@@ -13,6 +14,7 @@ type Chainer struct {
     Amount int
     head *Chainer  `json:"-"`
     tail *Chainer  `json:"-"`
+    prev *Chainer  `json:"-"`
     next *Chainer  `json:"-"`
 }
 
@@ -22,38 +24,56 @@ func NewChainer(previous string, from string, to string, amount int) Chainer{
     return c
 }
 
+// get all block before this one 
+// filter out fields except Checksum
+func getTextAllBlocks(block Chainer) string{
+    text_block := ""
+    cursor := &block;
+    for true {
+        text_block += getNakedText(*cursor)
+        cursor = cursor.next
+        
+        if cursor == nil {
+            break
+        }
+    }
+
+    return text_block
+}
+
+func (c Chainer) Hey(){
+}
+
 func calcHexBlock(block Chainer) string {
         acopy := block
         acopy.Checksum = ""
         acopy.head = nil
         acopy.tail = nil
         acopy.head = nil
-
+        all_text := getTextAllBlocks(*block.prev)
+    all_text_string := string(all_text)
+    
     json_block, _ := json.Marshal(acopy)
-    hash := md5.Sum([]byte(json_block))
+    json_block_string := string(json_block)
+    reply := all_text_string + json_block_string
+
+    hash := md5.Sum([]byte(reply))
     text := hex.EncodeToString(hash[:])
+    
     return  text
 }
 
 func getNakedText(block Chainer) string{
         acopy := block
-        acopy.Checksum = ""
+        // acopy.Checksum = ""
         acopy.head = nil
         acopy.tail = nil
-        acopy.head = nil
+        acopy.next = nil
+        acopy.prev = nil
 
     json_block, _ := json.Marshal(acopy)
 
     return string(json_block)
-}
-
-func getTextAllBlocks(block Chainer) string{
-    text_block := ""
-    cursor := &block;
-    for true {
-        text_block += getNakedText(*cursor)
-    }
-    return ""
 }
 
 // returns pointer to object that failed checksum check.
@@ -71,7 +91,7 @@ func ValidateChain(chain *Chainer) (string, *Chainer) {
         // calculate cumilitive checksum
         // shallow check - checksums of checksums
         if prev != nil {
-            
+             
         }
 
         next = next.next
