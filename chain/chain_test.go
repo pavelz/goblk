@@ -12,6 +12,15 @@ func TestCalcHexBlock(t *testing.T){
   assert.Equal(t, calcHexBlock(block), "dc600b3b9a29452c20e85e8d0e848ea9")
 }
 
+func TestGetAllTextBlocks(t *testing.T){
+  block1 := Chainer{Previous: "two", From: "me", To: "who"}
+  block2 := Chainer{Previous: "two", From: "me", To: "who",next: &block1}
+  block3 := Chainer{Previous: "two", From: "me", To: "who", next: &block2}
+
+  //fmt.Printf("\nblocks: %d\n", len(getTextAllBlocks(block3)))
+  assert.Equal(t, 198, len(getTextAllBlocks(block3)))
+}
+
 //func TestSomething(t *testing.T) {
 
   //// assert equality
