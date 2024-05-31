@@ -37,7 +37,8 @@ func TestGetNakedText(t *testing.T){
 func TestValidateChain(t *testing.T){
   t.Skip("to implement ValidateChain")
 }
-
+// thinking backwards what do i need to check for what is to be done writing stuff.
+// mock fs methods and have them be called when running the code
 func TestWriteChain(t *testing.T){
   t.Skip("to implement WriteChain")
 }
