@@ -37,3 +37,7 @@ func TestGetNakedText(t *testing.T){
 func TestValidateChain(t *testing.T){
   t.Skip("to implement ValidateChain")
 }
+
+func TestWriteChain(t *testing.T){
+  t.Skip("to implement WriteChain")
+}
