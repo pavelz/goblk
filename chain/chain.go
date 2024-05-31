@@ -52,6 +52,7 @@ func calcHexBlock(block Chainer) string {
     acopy.head = nil
     acopy.tail = nil
     acopy.head = nil
+
     all_text := ""
     if(block.prev != nil){
         all_text = getTextAllBlocks(*block.prev)
