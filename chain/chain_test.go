@@ -33,3 +33,7 @@ func TestGetNakedText(t *testing.T){
 
   assert.Equal(t, 66, len(getNakedText(block1)))
 }
+
+func TestValidateChain(t *testing.T){
+  t.Skip("to implement ValidateChain")
+}
