@@ -1,10 +1,14 @@
 package chain
 
+
 import (
+  "fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+var _ = fmt.Printf
 
 func TestCalcHexBlock(t *testing.T){
   block := Chainer{Previous: "two", From: "me", To: "who"}
@@ -17,10 +21,16 @@ func TestGetAllTextBlocks(t *testing.T){
   block2 := Chainer{Previous: "two", From: "me", To: "who",next: &block1}
   block3 := Chainer{Previous: "two", From: "me", To: "who", next: &block2}
 
-  //fmt.Printf("\nblocks: %d\n", len(getTextAllBlocks(block3)))
+  //Printf("\nblocks: %d\n", len(getTextAllBlocks(block3)))
   assert.Equal(t, 198, len(getTextAllBlocks(block3)))
 }
 
+
+func TestGetNakedText(t *testing.T){
+  block1 := Chainer{Previous: "two", From: "me", To: "who"}
+  //fmt.Printf("%d\n", len(getNakedText(block1)))
+  assert.Equal(t, 66, len(getNakedText(block1)))
+}
 //func TestSomething(t *testing.T) {
 
   //// assert equality
