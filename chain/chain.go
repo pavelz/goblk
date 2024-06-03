@@ -89,7 +89,7 @@ func getNakedText(block Chainer) string{
 func ValidateChain(chain *Chainer) (string, *Chainer) {
     next:= chain
     var prev *Chainer = nil
-    for true{
+    for true {
         hex_check := calcHexBlock(*next)
         if hex_check != next.Checksum {
             return hex_check, next
