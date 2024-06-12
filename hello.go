@@ -1,8 +1,9 @@
 package main
 
 import (
-	"gofmt/chain"
 	"crypto/md5"
+	"gofmt/chain"
+	"gofmt/fs"
 	"encoding/hex"
 	"fmt"
 )

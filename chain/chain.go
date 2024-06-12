@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+  "goblk/fs"
 )
 
 type Chainer struct {
