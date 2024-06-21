@@ -1,4 +1,4 @@
-module gofmt
+module goblk
 
 go 1.18
 

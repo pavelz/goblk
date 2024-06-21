@@ -4,13 +4,12 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
   "goblk/fs"
 )
 
 type Chainer struct {
-    Checksum string //checksum of all blocks and this one
-    Previous string //prev block
+    Checksum string // checksum of all blocks and this one
+    Previous string // prev block
     From string // does it matter for chain? not at its core
     To string
     Amount int
@@ -21,7 +20,6 @@ type Chainer struct {
 }
 
 func NewChainer(previous string, from string, to string, amount int) Chainer{
-    fmt.Println("WHAT")
     c := Chainer{ Previous: previous, From: from, To: to, Amount: amount}
     c.Checksum = calcHexBlock(c)
     return c
@@ -62,7 +60,6 @@ func calcHexBlock(block Chainer) string {
 
     json_block, _ := json.Marshal(acopy)
     json_block_string := string(json_block)
-    fmt.Printf("\na %s j %s\n", all_text_string, json_block_string)
     reply := all_text_string + json_block_string
 
     hash := md5.Sum([]byte(reply))
@@ -110,6 +107,14 @@ func ValidateChain(chain *Chainer) (string, *Chainer) {
     return "", nil
 }
 
-func writeChain(path string) int {
+// todo: write in protocol buffers?
+func (c Chainer) WriteChain(path string) int {
+
+    // write chain
+    a := fs.Fs{}
+    file := a.Open(path)
+    file.Write([]byte(getNakedText(c)))
+    file.Close()
+
     return 0
 }

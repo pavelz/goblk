@@ -26,7 +26,6 @@ func TestGetAllTextBlocks(t *testing.T){
   assert.Equal(t, 198, len(getTextAllBlocks(block3)))
 }
 
-
 func TestGetNakedText(t *testing.T){
 
   block1 := Chainer{Previous: "two", From: "me", To: "who"}
