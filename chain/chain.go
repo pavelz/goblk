@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
   "goblk/fs"
+  "errors"
 )
 
 type Chainer struct {
@@ -43,6 +44,49 @@ func getTextAllBlocks(block Chainer) string{
 }
 
 func (c Chainer) Hey(){
+}
+
+
+// this shall tigger mining? something like that.
+func (c Chainer) Send(from string, to string, amount int) (error){
+    // where from, where to.
+    // from to addresses?
+    // wallet?
+    // From has to have enough Amount to send to To
+
+    walletBalance,_ := c.getAmount(from)
+
+    if walletBalance - amount > 0 {
+        return errors.New("insufficient balance")
+    }
+
+    c := Chainer{From: from,To: to, Amount: amount}
+
+    return nil
+}
+
+func (c Chaine) getBlock(address string){
+
+    var next *Chainer = &c;
+    for {
+        if next.To == address {
+            return next, nil
+        }
+        if c.next == nil {
+            break
+        }
+        next = c.next
+
+    }
+    return 0 , errors.New("not found")
+}
+
+func (c Chainer) getAmount(address string) (int, error){
+    blk, err := c.getBlock(from)
+    if er != nil {
+        return err
+    }
+    return blk.Amount
 }
 
 func calcHexBlock(block Chainer) string {
