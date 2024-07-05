@@ -60,12 +60,22 @@ func (c Chainer) Send(from string, to string, amount int) (error){
         return errors.New("insufficient balance")
     }
 
-    c := Chainer{From: from,To: to, Amount: amount}
+    var  blk Chainer = Chainer{From: from,To: to, Amount: amount}
+    // todo prepend in datastructs
+    c.tail.tail = &blk
+    end, err := c.getBlock(to)
 
+    if err != nil {
+        return err
+    }
+    if end.tail != nil {
+        return errors.New("end of blockchain is not")
+    }
+    end.tail = &blk
     return nil
 }
 
-func (c Chaine) getBlock(address string){
+func (c Chainer) getBlock(address string) (*Chainer, error){
 
     var next *Chainer = &c;
     for {
@@ -78,15 +88,16 @@ func (c Chaine) getBlock(address string){
         next = c.next
 
     }
-    return 0 , errors.New("not found")
+    return nil , errors.New("not found")
 }
 
 func (c Chainer) getAmount(address string) (int, error){
-    blk, err := c.getBlock(from)
-    if er != nil {
-        return err
+    blk, err := c.getBlock(address)
+    if err != nil {
+        return 0, err
     }
-    return blk.Amount
+
+    return blk.Amount,nil
 }
 
 func calcHexBlock(block Chainer) string {
