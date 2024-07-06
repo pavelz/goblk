@@ -14,6 +14,12 @@ func main() {
 	a.WriteChain("chain.json")
 
 	// load chain
+	_, err := chain.LoadChain("chain.json")
+
+	if err != nil {
+		println("there was an error: " + err.Error())
+	}
+	
 	
 	fmt.Printf("Hello, World! %s %s\n", text, a.Checksum)
 }

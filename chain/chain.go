@@ -38,10 +38,10 @@ func LoadChain(path string) (*Chainer, error){
     var chain Chainer
     err = json.Unmarshal(chain_data, &chain)
     if err != nil {
-        return nil, errors.New("Error parsing blockchain data:" + err.Error())
+        return nil, errors.New("Error parsing blockchain data: " + err.Error())
     }
 
-    return &chain, errors.New("error happened")
+    return &chain, nil
 }   
 
 // get all block before this one 
