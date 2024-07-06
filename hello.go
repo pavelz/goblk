@@ -12,6 +12,8 @@ func main() {
 	text := hex.EncodeToString(hash[:])
 	a := chain.NewChainer("123", "321", "312", 0)
 	a.WriteChain("chain.json")
+
+	// load chain
 	
 	fmt.Printf("Hello, World! %s %s\n", text, a.Checksum)
 }

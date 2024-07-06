@@ -4,8 +4,9 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
-  "goblk/fs"
-  "errors"
+	"errors"
+	"goblk/fs"
+	"os"
 )
 
 type Chainer struct {
@@ -25,6 +26,23 @@ func NewChainer(previous string, from string, to string, amount int) Chainer{
     c.Checksum = calcHexBlock(c)
     return c
 }
+
+// json chain? - at the momemnt
+func LoadChain(path string) (*Chainer, error){
+    chain_data,err := os.ReadFile(path)
+
+    if err != nil {
+        return nil, err
+    }
+
+    var chain Chainer
+    err = json.Unmarshal(chain_data, &chain)
+    if err != nil {
+        return nil, errors.New("Error parsing blockchain data:" + err.Error())
+    }
+
+    return &chain, errors.New("error happened")
+}   
 
 // get all block before this one 
 // filter out fields except Checksum
@@ -61,17 +79,21 @@ func (c Chainer) Send(from string, to string, amount int) (error){
     }
 
     var  blk Chainer = Chainer{From: from,To: to, Amount: amount}
-    // todo prepend in datastructs
+
+    // TODO prepend in datastructs
     c.tail.tail = &blk
     end, err := c.getBlock(to)
 
     if err != nil {
         return err
     }
+
     if end.tail != nil {
-        return errors.New("end of blockchain is not")
+        return errors.New("end of the blockchain is not")
     }
+
     end.tail = &blk
+
     return nil
 }
 
@@ -108,7 +130,7 @@ func calcHexBlock(block Chainer) string {
     acopy.head = nil
 
     all_text := ""
-    if(block.prev != nil){
+    if block.prev != nil {
         all_text = getTextAllBlocks(*block.prev)
     }
     all_text_string := string(all_text)
