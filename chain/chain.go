@@ -13,6 +13,7 @@ import (
 type Chainer struct {
     chain []Chain
 }
+
 type Chain struct {
     Checksum string // checksum of all blocks and this one
     Previous string // prev block
@@ -21,10 +22,11 @@ type Chain struct {
     Amount int
 }
 
-func NewChainer(previous string, from string, to string, amount int) Chainer{
-    c := Chainer{ Previous: previous, From: from, To: to, Amount: amount}
+func NewChain(previous string, from string, to string, amount int) (*Chainer){
+    c := Chain{ Previous: previous, From: from, To: to, Amount: amount}
     c.Checksum = calcHexBlock(c)
-    return c
+    chainer := Chainer{chain: []Chain{c}}
+    return &chainer 
 }
 
 
@@ -50,14 +52,14 @@ func LoadChain(path string) (*Chainer, error){
 // filter out fields except Checksum
 func getTextAllBlocks(block Chainer) string{
     text_block := ""
-    cursor := &block;
+    index := 0
     for true {
-        text_block += getNakedText(*cursor)
-        cursor = cursor.next
-        
-        if cursor == nil {
+        if index >= len(block.chain) {
             break
         }
+        text_block += getNakedText(block.chain[index])
+        
+        index++
     }
 
     return text_block
@@ -124,7 +126,7 @@ func (c Chainer) getAmount(address string) (int, error){
     return blk.Amount,nil
 }
 
-func calcHexBlock(block Chainer) string {
+func calcHexBlock(block Chain) string {
     acopy := block
     acopy.Checksum = ""
 
@@ -144,7 +146,7 @@ func calcHexBlock(block Chainer) string {
     return  text
 }
 
-func getNakedText(block Chainer) string{
+func getNakedText(block Chain) string{
         acopy := block
         // acopy.Checksum = ""
 
