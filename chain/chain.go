@@ -9,16 +9,16 @@ import (
 	"os"
 )
 
+
 type Chainer struct {
+    chain []Chain
+}
+type Chain struct {
     Checksum string // checksum of all blocks and this one
     Previous string // prev block
     From string // does it matter for chain? not at its core
     To string
     Amount int
-    head *Chainer  `json:"-"`
-    tail *Chainer  `json:"-"`
-    prev *Chainer  `json:"-"`
-    next *Chainer  `json:"-"`
 }
 
 func NewChainer(previous string, from string, to string, amount int) Chainer{
@@ -26,6 +26,7 @@ func NewChainer(previous string, from string, to string, amount int) Chainer{
     c.Checksum = calcHexBlock(c)
     return c
 }
+
 
 // json chain? - at the momemnt
 func LoadChain(path string) (*Chainer, error){
@@ -37,6 +38,7 @@ func LoadChain(path string) (*Chainer, error){
 
     var chain Chainer
     err = json.Unmarshal(chain_data, &chain)
+
     if err != nil {
         return nil, errors.New("Error parsing blockchain data: " + err.Error())
     }
@@ -125,9 +127,6 @@ func (c Chainer) getAmount(address string) (int, error){
 func calcHexBlock(block Chainer) string {
     acopy := block
     acopy.Checksum = ""
-    acopy.head = nil
-    acopy.tail = nil
-    acopy.head = nil
 
     all_text := ""
     if block.prev != nil {
@@ -148,10 +147,6 @@ func calcHexBlock(block Chainer) string {
 func getNakedText(block Chainer) string{
         acopy := block
         // acopy.Checksum = ""
-        acopy.head = nil
-        acopy.tail = nil
-        acopy.next = nil
-        acopy.prev = nil
 
     json_block, _ := json.Marshal(acopy)
 

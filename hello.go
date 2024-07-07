@@ -5,6 +5,7 @@ import (
 	"goblk/chain"
 	"encoding/hex"
 	"fmt"
+	"encoding/json"
 )
 
 func main() {
@@ -14,12 +15,12 @@ func main() {
 	a.WriteChain("chain.json")
 
 	// load chain
-	_, err := chain.LoadChain("chain.json")
+	chain, err := chain.LoadChain("chain.json")
 
 	if err != nil {
 		println("there was an error: " + err.Error())
 	}
-	
+	println(json.Marshal(*chain))
 	
 	fmt.Printf("Hello, World! %s %s\n", text, a.Checksum)
 }
