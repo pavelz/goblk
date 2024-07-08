@@ -11,10 +11,10 @@ import (
 
 
 type Chainer struct {
-    chain []Chain
+    chain []Block
 }
 
-type Chain struct {
+type Block struct {
     Checksum string // checksum of all blocks and this one
     Previous string // prev block
     From string // does it matter for chain? not at its core
@@ -23,9 +23,9 @@ type Chain struct {
 }
 
 func NewChain(previous string, from string, to string, amount int) (*Chainer){
-    c := Chain{ Previous: previous, From: from, To: to, Amount: amount}
+    c := Block{ Previous: previous, From: from, To: to, Amount: amount}
     c.Checksum = calcHexBlock(c)
-    chainer := Chainer{chain: []Chain{c}}
+    chainer := Chainer{chain: []Block{c}}
     return &chainer 
 }
 
@@ -70,51 +70,38 @@ func (c Chainer) Hey(){
 
 
 // this shall tigger mining? something like that.
-func (c Chainer) Send(from string, to string, amount int) (error){
+func (chain Chainer) Send(from string, to string, amount int) (error){
     // where from, where to.
     // from to addresses?
     // wallet?
     // From has to have enough Amount to send to To
 
-    walletBalance,_ := c.getAmount(from)
+    walletBalance,_ := chain.getAmount(from)
 
     if walletBalance - amount > 0 {
         return errors.New("insufficient balance")
     }
 
-    var  blk Chainer = Chainer{From: from,To: to, Amount: amount}
+    var blk = Block{From: from, To: to, Amount: amount}
 
     // TODO prepend in datastructs
-    c.tail.tail = &blk
-    end, err := c.getBlock(to)
+    end, err := chain.getBlock(to)
 
     if err != nil {
         return err
     }
-
-    if end.tail != nil {
-        return errors.New("end of the blockchain is not")
-    }
-
-    end.tail = &blk
+    chain.chain = append(chain.chain, blk)
 
     return nil
 }
 
-func (c Chainer) getBlock(address string) (*Chainer, error){
-
-    var next *Chainer = &c;
-    for {
-        if next.To == address {
-            return next, nil
+func (c Chainer) getBlock(address string) (*Block, error){
+    for _, item := range c.chain {
+        if item.Checksum == address {
+            return &item, nil
         }
-        if c.next == nil {
-            break
-        }
-        next = c.next
-
     }
-    return nil , errors.New("not found")
+    return nil, errors.New("no address " + address + " found")
 }
 
 func (c Chainer) getAmount(address string) (int, error){
@@ -126,7 +113,7 @@ func (c Chainer) getAmount(address string) (int, error){
     return blk.Amount,nil
 }
 
-func calcHexBlock(block Chain) string {
+func calcHexBlock(block Block) string {
     acopy := block
     acopy.Checksum = ""
 
@@ -146,7 +133,7 @@ func calcHexBlock(block Chain) string {
     return  text
 }
 
-func getNakedText(block Chain) string{
+func getNakedText(block Block) string{
         acopy := block
         // acopy.Checksum = ""
 
