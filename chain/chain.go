@@ -59,13 +59,12 @@ func getTextAllBlocksBefore(chain *Chainer, before *Block) (string){
     var err error
     for _, block :=  range chain.chain {
 
-        // does not return current block too
+        text_block, err =  getNakedText(block)
+        
         if before != nil && block.Checksum == before.Checksum {
             break
         }
 
-        text_block, err =  getNakedText(block)
-        
         if err != nil {
             // lets panic some
             panic("Fatal error: " + err.Error())
@@ -120,13 +119,8 @@ func calcHexBlock(chain *Chainer, block *Block) string {
     acopy.Checksum = ""
 
     all_text := getTextAllBlocksBefore(chain, block)
-    all_text_string := string(all_text)
 
-    json_block, _ := json.Marshal(acopy)
-    json_block_string := string(json_block)
-    reply := all_text_string + json_block_string
-
-    hash := md5.Sum([]byte(reply))
+    hash := md5.Sum([]byte(all_text))
     text := hex.EncodeToString(hash[:])
 
     return  text
