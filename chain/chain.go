@@ -50,13 +50,17 @@ func LoadChain(path string) (*Chainer, error){
 
 // get all block before this one 
 // filter out fields except Checksum
-func getTextAllBlocks(chain Chainer, before *Block = nil) string{
+func getTextAllBlocks(chain *Chainer){
+    getTextAllBlocksBefore(chain, nil)
+}
+
+func getTextAllBlocksBefore(chain *Chainer, before *Block) (string){
     var text_block = ""
     var err error
     for _, block :=  range chain.chain {
 
         // does not return current block too
-        if block.Checksum == before.Checksum {
+        if before != nil && block.Checksum == before.Checksum {
             break
         }
 
@@ -111,11 +115,11 @@ func (c Chainer) getAmount(address string) (int, error){
     return blk.Amount,nil
 }
 
-func calcHexBlock(block Block) string {
+func calcHexBlock(chain *Chainer, block *Block) string {
     acopy := block
     acopy.Checksum = ""
 
-    all_text := getTextAllBlocks(*block.prev)
+    all_text := getTextAllBlocksBefore(chain, block)
     all_text_string := string(all_text)
 
     json_block, _ := json.Marshal(acopy)
