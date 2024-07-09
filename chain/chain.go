@@ -49,8 +49,8 @@ func LoadChain(path string) (*Chainer, error){
 
 // get all block before this one 
 // filter out fields except Checksum
-func getTextAllBlocks(chain *Chainer){
-    getTextAllBlocksBefore(chain, nil)
+func getTextAllBlocks(chain *Chainer) (string){
+    return getTextAllBlocksBefore(chain, nil)
 }
 
 func getTextAllBlocksBefore(chain *Chainer, before *Block) (string){
@@ -145,9 +145,11 @@ func ValidateChain(chain *Chainer) (*Block, error) {
         // history blocks can have their checksums in hash ingestion dataset.
         var save_hash = block.Checksum 
         block.Checksum = ""
+
         extra,_ := getNakedText(block)
         hash := md5.Sum([]byte(text + extra))
         hex := hex.EncodeToString(hash[:])
+
         if save_hash != hex {
             block.Checksum = save_hash
             return &block, errors.New("hash checksum mismatch")
@@ -162,7 +164,7 @@ func (c Chainer) WriteChain(path string) int {
     // write chain
     a := fs.Fs{}
     file := a.Open(path)
-    file.Write([]byte(getNakedText(c)))
+    file.Write([]byte(getTextAllBlocks(&c)))
     file.Close()
 
     return 0
