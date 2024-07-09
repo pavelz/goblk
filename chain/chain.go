@@ -58,13 +58,12 @@ func getTextAllBlocksBefore(chain *Chainer, before *Block) (string){
     var text_block = ""
     var err error
     for _, block :=  range chain.chain {
-
-        text_block, err =  getNakedText(block)
-        
         if before != nil && block.Checksum == before.Checksum {
             break
         }
 
+        text_block, err =  getNakedText(block)
+        
         if err != nil {
             // lets panic some
             panic("Fatal error: " + err.Error())
@@ -138,27 +137,24 @@ func getNakedText(block Block) (string, error){
 // returns pointer to object that failed checksum check.
 // todo: cumilative hash hex sums
 // how to telescope in
-func ValidateChain(chain *Chainer) (string, *Chainer) {
-    next:= chain
-    var prev *Chainer = nil
-    for true {
-        hex_check := calcHexBlock(*next)
-        if hex_check != next.Checksum {
-            return hex_check, next
-        }
-
-        // calculate cumilitive checksum
-        // shallow check - checksums of checksums
-        if prev != nil {
-             
-        }
-
-        next = next.next
-        if next.next == nil {
-            break
+func ValidateChain(chain *Chainer) (*Block, error) {
+    for _, block := range chain.chain {
+        // calc hex for the block and all previous blocks
+        text := getTextAllBlocksBefore(chain, &block)
+        // exclude checksum from current calc. avoids off by one errors for first blocks.
+        // when hash is calculated for current block originally it should not have a check sum, right?
+        // history blocks can have their checksums in hash ingestion dataset.
+        var save_hash = block.Checksum 
+        block.Checksum = ""
+        extra,_ := getNakedText(block)
+        hash := md5.Sum([]byte(text + extra))
+        hex := hex.EncodeToString(hash[:])
+        if save_hash != hex {
+            block.Checksum = save_hash
+            return &block, errors.New("hash checksum mismatch")
         }
     }
-    return "", nil
+    return nil, nil
 }
 
 // todo: write in protocol buffers?
