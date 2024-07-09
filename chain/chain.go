@@ -23,12 +23,11 @@ type Block struct {
 }
 
 func NewChain(previous string, from string, to string, amount int) (*Chainer){
-    c := Block{ Previous: previous, From: from, To: to, Amount: amount}
-    c.Checksum = calcHexBlock(c)
-    chainer := Chainer{chain: []Block{c}}
+    b := Block{ Previous: previous, From: from, To: to, Amount: amount}
+    chainer := Chainer{chain: []Block{b}}
+    b.Checksum = calcHexBlock(&chainer, &b)
     return &chainer 
 }
-
 
 // json chain? - at the momemnt
 func LoadChain(path string) (*Chainer, error){
