@@ -50,18 +50,23 @@ func LoadChain(path string) (*Chainer, error){
 
 // get all block before this one 
 // filter out fields except Checksum
-func getTextAllBlocks(block Chainer) string{
-    text_block := ""
-    index := 0
-    for true {
-        if index >= len(block.chain) {
+func getTextAllBlocks(chain Chainer, before *Block = nil) string{
+    var text_block = ""
+    var err error
+    for _, block :=  range chain.chain {
+
+        // does not return current block too
+        if block.Checksum == before.Checksum {
             break
         }
-        text_block += getNakedText(block.chain[index])
-        
-        index++
-    }
 
+        text_block, err =  getNakedText(block)
+        
+        if err != nil {
+            // lets panic some
+            panic("Fatal error: " + err.Error())
+        }
+    }
     return text_block
 }
 
@@ -70,7 +75,7 @@ func (c Chainer) Hey(){
 
 
 // this shall tigger mining? something like that.
-func (chain Chainer) Send(from string, to string, amount int) (error){
+func (chain Chainer) Send(from string, to string, amount int) (*Block, error){
     // where from, where to.
     // from to addresses?
     // wallet?
@@ -79,20 +84,13 @@ func (chain Chainer) Send(from string, to string, amount int) (error){
     walletBalance,_ := chain.getAmount(from)
 
     if walletBalance - amount > 0 {
-        return errors.New("insufficient balance")
+        return nil, errors.New("insufficient balance")
     }
 
     var blk = Block{From: from, To: to, Amount: amount}
 
-    // TODO prepend in datastructs
-    end, err := chain.getBlock(to)
-
-    if err != nil {
-        return err
-    }
     chain.chain = append(chain.chain, blk)
-
-    return nil
+    return &blk, nil
 }
 
 func (c Chainer) getBlock(address string) (*Block, error){
@@ -117,10 +115,7 @@ func calcHexBlock(block Block) string {
     acopy := block
     acopy.Checksum = ""
 
-    all_text := ""
-    if block.prev != nil {
-        all_text = getTextAllBlocks(*block.prev)
-    }
+    all_text := getTextAllBlocks(*block.prev)
     all_text_string := string(all_text)
 
     json_block, _ := json.Marshal(acopy)
@@ -133,13 +128,13 @@ func calcHexBlock(block Block) string {
     return  text
 }
 
-func getNakedText(block Block) string{
-        acopy := block
-        // acopy.Checksum = ""
+func getNakedText(block Block) (string, error){
+    json_block, err := json.Marshal(block)
 
-    json_block, _ := json.Marshal(acopy)
-
-    return string(json_block)
+    if err != nil {
+        return "", err
+    }
+    return string(json_block), nil
 }
 
 // returns pointer to object that failed checksum check.
