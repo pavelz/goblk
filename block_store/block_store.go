@@ -28,12 +28,8 @@ func Open(path string) (*BlockStore, error) {
 	return &store, nil
 }
 
-// get binary block via index at not binary offset
-// oh no need sizes of the blocks too?
-// should blocks have size at the beginning? this is two reads. no need.
-// index - offset
-// index + 1  = blocks size
-// keep semantis in one place
+// I guess at is a primary id index stuff
+// is there a cache?
 
 func (b * BlockStore) BlockAt(at uint64) ([]byte){
 	at_s := at * 2
