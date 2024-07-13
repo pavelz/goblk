@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 )
+
 const INDEX_SIZE uint = 0xffff
 
 type BlockStore struct {
@@ -38,7 +39,22 @@ func (b * BlockStore) BlockAt(at uint64) ([]byte){
 	offset, size := b.index[at], b.index[at + 1]
 	block := make([]byte, size, size)
 
-	b.file.Seek(int64(offset),io.SeekStart)
+	b.file.Seek(int64(offset),io.SeekStart) //x
 	b.file.Read(block)
 	return block
+}
+
+func (b * BlockStore) SaveAt(at uint64,at_block []byte){
+	offset, size := b.index[at], b.index[at + 1]
+	block := make([]byte, size, size)
+	at_size := len(at_block)
+
+	if uint64(at_size) > size {
+		// append block
+		// replace index
+	} else {
+		// replace block
+		b.file.Seek(int64(offset), io.SeekStart)
+		b.file.Write(block)
+	}
 }
