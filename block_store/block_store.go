@@ -36,7 +36,7 @@ func Open(path string) (*BlockStore, error) {
 // keep semantis in one place
 
 func (b * BlockStore) BlockAt(at uint64) ([]byte){
-	offset, size := b.index[at], b.index[at + 1]
+	offset, size := b.index[at * 2], b.index[at  * 2 + 1]
 	block := make([]byte, size, size)
 
 	b.file.Seek(int64(offset),io.SeekStart) //x
@@ -45,14 +45,23 @@ func (b * BlockStore) BlockAt(at uint64) ([]byte){
 }
 
 func (b * BlockStore) SaveAt(at uint64,at_block []byte){
-	offset, size := b.index[at], b.index[at + 1]
+	offset, size := b.index[at * 2], b.index[at + 1]
 	block := make([]byte, size, size)
 	at_size := len(at_block)
 
 	if uint64(at_size) > size {
 		// append block
 		// replace index
-	} else {
+		end_offset, err := b.file.Seek(0, io.SeekEnd)
+
+		if err != nil {
+			panic("cannot seek:" + err.Error())
+		}
+
+		b.file.Write(at_block)
+		b.index[at * 2] = end_offset - at_size
+		b.index[at * 2 + 1] = at_size
+	} else { 
 		// replace block
 		b.file.Seek(int64(offset), io.SeekStart)
 		b.file.Write(block)
