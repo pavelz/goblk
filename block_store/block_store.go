@@ -52,8 +52,6 @@ func (b * BlockStore) SaveAt(at uint64,at_block []byte){
 	at_size := len(at_block)
 
 	if uint64(at_size) > size {
-		// append block
-		// replace index
 		end_offset, err := b.file.Seek(0, io.SeekEnd)
 
 		if err != nil {
@@ -61,8 +59,9 @@ func (b * BlockStore) SaveAt(at uint64,at_block []byte){
 		}
 
 		b.file.Write(at_block)
-		b.index[at_s] = end_offset - at_size
-		b.index[at_s + 1] = at_size
+		b.index[at_s] = uint64(end_offset) - uint64(at_size)
+		b.index[at_s + 1] = uint64(at_size)
+
 	} else { 
 		// replace block
 		b.file.Seek(int64(offset), io.SeekStart)
