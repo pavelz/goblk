@@ -24,5 +24,3 @@ type Mine struct {
 func (m Mine) Mine(mine_path string) (error) {
 	return nil
 }
-
-

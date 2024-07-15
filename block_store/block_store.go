@@ -8,6 +8,11 @@ import (
 
 const INDEX_SIZE uint = 0xffff
 
+type BlockIfc interface {
+	BlockAt(at uint64)
+	SaveAt(at uint64, block []byte)
+}
+
 type BlockStore struct {
 	index []uint64
 	file *os.File
