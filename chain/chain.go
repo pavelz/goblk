@@ -12,6 +12,7 @@ import (
 
 type Chainer struct {
     chain []Block
+    lastBlock int
 }
 
 type Block struct {
@@ -27,6 +28,23 @@ func NewChain(previous string, from string, to string, amount int) (*Chainer){
     chainer := Chainer{chain: []Block{b}}
     b.Checksum = calcHexBlock(&chainer, &b)
     return &chainer 
+}
+
+func (c *Chainer) GetChecksum() (string){
+  return c.chain[len(c.chain) -1].Checksum
+}
+
+func (c *Chainer) AddBlock(b *Block) (error) {
+  // find block
+  if(len(c.chain) > c.lastBlock) {
+    return errors.New("Out of Mememory")
+  }
+
+  // add block
+  c.lastBlock ++
+  c.chain[c.lastBlock] = *b
+
+  return nil
 }
 
 // json chain? - at the momemnt

@@ -1,6 +1,6 @@
 package miner
 import (
-	"goblk/chain"
+	_ "goblk/chain"
 )
 
 type Miner interface {
