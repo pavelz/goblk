@@ -24,6 +24,7 @@ type Block struct {
 }
 
 func NewChain(previous string, from string, to string, amount int) (*Chainer){
+   // but why
     b := Block{ Previous: previous, From: from, To: to, Amount: amount}
     chainer := Chainer{chain: []Block{b}}
     b.Checksum = calcHexBlock(&chainer, &b)
@@ -31,7 +32,7 @@ func NewChain(previous string, from string, to string, amount int) (*Chainer){
 }
 
 func (c *Chainer) GetChecksum() (string){
-  return c.chain[len(c.chain) -1].Checksum
+  return c.chain[c.lastBlock].Checksum
 }
 
 func (c *Chainer) AddBlock(b *Block) (error) {

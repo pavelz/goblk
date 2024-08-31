@@ -18,6 +18,7 @@ func TestCalcHexBlock(t *testing.T){
 }
 
 func TestGetAllTextBlocks(t *testing.T){
+  // rewrite
 
   block1 := Block{Previous: "two", From: "me", To: "who"}
   block2 := Block{Previous: "two", From: "me", To: "who"}
