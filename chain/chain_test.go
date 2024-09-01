@@ -12,26 +12,35 @@ var _ = fmt.Printf
 
 func TestCalcHexBlock(t *testing.T){
 
+  c := NewChain()
   block := Block{Previous: "two", From: "me", To: "who"}
-
-  assert.Equal(t, calcHexBlock(block), "dc600b3b9a29452c20e85e8d0e848ea9")
+  c.AddBlock(&block)
+  
+  assert.Equal(t, calcHexBlock(c, &block), "d41d8cd98f00b204e9800998ecf8427e")
 }
 
 func TestGetAllTextBlocks(t *testing.T){
   // rewrite
+  c := NewChain()
 
   block1 := Block{Previous: "two", From: "me", To: "who"}
-  block2 := Block{Previous: "two", From: "me", To: "who"}
-  block3 := Block{Previous: "two", From: "me", To: "who"}
+  c.AddBlock(&block1)
 
-  assert.Equal(t, 198, len(getTextAllBlocks(block3)))
+  block2 := Block{Previous: "two", From: "me", To: "who"}
+  c.AddBlock(&block2)
+
+  block3 := Block{Previous: "two", From: "me", To: "who"}
+  c.AddBlock(&block3)
+
+  assert.Equal(t, 58, len(getTextAllBlocks(c)))
 }
 
 func TestGetNakedText(t *testing.T){
 
   block1 := Block{Previous: "two", From: "me", To: "who"}
-
-  assert.Equal(t, 66, len(getNakedText(block1)))
+  text, err := getNakedText(block1)
+  assert.Equal(t, nil, err)
+  assert.Equal(t, 66, len(text))
 }
 
 func TestValidateChain(t *testing.T){

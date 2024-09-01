@@ -23,11 +23,8 @@ type Block struct {
     Amount int
 }
 
-func NewChain(previous string, from string, to string, amount int) (*Chainer){
-   // but why
-    b := Block{ Previous: previous, From: from, To: to, Amount: amount}
-    chainer := Chainer{chain: []Block{b}}
-    b.Checksum = calcHexBlock(&chainer, &b)
+func NewChain() (*Chainer){
+    chainer := Chainer{chain: make([]Block, 1024) }
     return &chainer 
 }
 
