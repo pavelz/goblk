@@ -11,7 +11,9 @@ import (
 func main() {
 	hash := md5.Sum([]byte("hex me"))
 	text := hex.EncodeToString(hash[:])
-  a := chain.NewChain()
+	a := chain.NewChain()
+  b := chain.Block{Previous: "two", From: "me", To: "who"}
+  a.AddBlock(&b)
 	a.WriteChain("chain.json")
 
 	// load chain
