@@ -7,6 +7,9 @@ import (
 	"errors"
 	"goblk/fs"
 	"os"
+
+  "google.golang.org/protobuf/proto"
+  "goblk/proto/gopkg/entry"
 )
 
 
@@ -21,6 +24,7 @@ type Block struct {
     From string // does it matter for chain? not at its core
     To string
     Amount int
+    Entries []entry.Entry
 }
 
 func NewChain() (*Chainer){
@@ -43,6 +47,9 @@ func (c *Chainer) AddBlock(b *Block) (error) {
   c.chain[c.lastBlock] = *b
 
   return nil
+}
+
+func (b *Block) AddEntry(from string, to string, amount string){
 }
 
 // json chain? - at the momemnt
@@ -174,6 +181,14 @@ func ValidateChain(chain *Chainer) (*Block, error) {
     return nil, nil
 }
 
+func (c Chainer) WriteChainProtobuf(path string){
+  for i, block :=  range(c.chain) {
+    message := proto.Marshal()// Hmmm i have to rework every record to be stored as protobuf i can't just get around it
+    
+  }
+}
+
+
 // todo: write in protocol buffers?
 func (c Chainer) WriteChain(path string) int {
 
@@ -182,6 +197,7 @@ func (c Chainer) WriteChain(path string) int {
     file := a.Open(path)
     file.Write([]byte(getTextAllBlocks(&c)))
     file.Close()
+
 
     return 0
 }
