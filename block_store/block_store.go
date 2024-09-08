@@ -30,11 +30,16 @@ type BlockIndex struct{
 func (b *BlockIndex) WriteIndex(){
 }
 
-func (b *BlockIndex) Lookup(id string) (BlockIndexEntry){
+func (b *BlockIndex) Lookup(id string) (*BlockIndexEntry){
   idx := slices.IndexFunc(b.index, func(n BlockIndexEntry) (bool){
     return bytes.Equal([]byte(id)[:128], n.Identifier[:])
   })
-  return b.index[idx]
+
+  if idx < 0 {
+    return nil
+  }
+
+  return &b.index[idx]
 }
 
 type BlockIfc interface {
