@@ -32,11 +32,7 @@ func (b *BlockIndex) WriteIndex(){
 
 func (b *BlockIndex) Lookup(id string) (BlockIndexEntry){
   idx := slices.IndexFunc(b.index, func(n BlockIndexEntry) (bool){
-    padded := [128]byte{}
-    b := []byte(id)[:128]
-    copy(b[:], padded[:len(b)])
-    
-    return bytes.Equal(padded[:], n.Identifier[:])
+    return bytes.Equal([]byte(id)[:128], n.Identifier[:])
   })
   return b.index[idx]
 }
