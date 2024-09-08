@@ -4,9 +4,42 @@ import (
 	"encoding/binary"
 	"io"
 	"os"
+  "slices"
+  "bytes"
 )
 
 const INDEX_SIZE uint = 0xffff
+
+type BlockHeader struct {
+  Index_blocks int64 // index_blocks * blocks_size = start of the blocks stored
+}
+
+// what is index here?
+// hash to block number?
+
+type BlockIndexEntry struct{
+  Identifier [128]byte
+  BlockNumber uint64
+}
+
+type BlockIndex struct{
+  index []BlockIndexEntry
+}
+
+// index code
+func (b *BlockIndex) WriteIndex(){
+}
+
+func (b *BlockIndex) Lookup(id string) (BlockIndexEntry){
+  idx := slices.IndexFunc(b.index, func(n BlockIndexEntry) (bool){
+    padded := [128]byte{}
+    b := []byte(id)[:128]
+    copy(b[:], padded[:len(b)])
+    
+    return bytes.Equal(padded[:], n.Identifier[:])
+  })
+  return b.index[idx]
+}
 
 type BlockIfc interface {
 	BlockAt(at uint64)

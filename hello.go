@@ -1,13 +1,20 @@
 package main
 
 import (
-	"goblk/chain"
-	"fmt"
 	"encoding/json"
-  "goblk/proto/gopkg/block"
+	"fmt"
+	"goblk/chain"
+	"goblk/proto/gopkg/block"
+
+	"google.golang.org/protobuf/internal/impl"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 func main() {
 	a := chain.NewChain()
-  c := block.Entry{Previous: "a", From: "b", To:"c", Amount: 100}
+  b := block.Block{
+    Entries: []*block.Entry{{Previous: "a", From: "b", To:"c", Amount: 100}},
+  }
+
+  a.AddBlock(b)
 }
