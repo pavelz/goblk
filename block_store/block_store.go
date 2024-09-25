@@ -1,11 +1,14 @@
 package block_store
 
 import (
+	"bytes"
 	"encoding/binary"
 	"io"
 	"os"
-  "slices"
-  "bytes"
+  "unsafe"
+	"slices"
+
+	"encoding/gob"
 )
 
 const INDEX_SIZE uint = 0xffff
@@ -16,7 +19,6 @@ type BlockHeader struct {
 
 // what is index here?
 // hash to block number?
-
 type BlockIndexEntry struct{
   Identifier [128]byte
   BlockNumber uint64
@@ -26,8 +28,57 @@ type BlockIndex struct{
   index []BlockIndexEntry
 }
 
-// index code
-func (b *BlockIndex) WriteIndex(){
+// Read index into struct
+func ReadIndex(path string) (BlockIndex) {
+
+  file, err := os.Open(path)
+
+  if err != nil {
+    os.Exit(-1)
+  }
+
+  var index_size_byte [8]byte
+  file.Seek(8, 2)
+  file.Read(index_size_byte[:])
+
+  reader := bytes.NewBuffer(index_size_byte[:])
+
+  var index_size int64
+  gob.NewDecoder(reader).Decode(&index_size)
+  blob := make([]byte, index_size)
+  file.Read(blob)
+
+  file.Seek(8 + index_size,2)
+  index_data := make([]byte, index_size)
+
+  file.Read(index_data)
+
+  if err != nil {
+    println(err)
+    os.Exit(-1)
+  }
+
+  index_blocks := index_size / int64(unsafe.Sizeof(BlockIndexEntry{}))
+
+  blocks := make([]BlockIndexEntry, index_blocks)
+  err = gob.NewDecoder(bytes.NewReader(index_data)).Decode(&blocks)
+  return BlockIndex{index: blocks}
+}
+
+// Write index to the end of the file
+func (b *BlockIndex) WriteIndex(path string){
+  file, err := os.Open(path)
+  if err != nil {
+    println(err)
+    os.Exit(-1)
+  }
+
+  file.Seek(0, 2)
+
+  buf := new(bytes.Buffer)
+  gob.NewEncoder(buf).Encode(*b)
+
+  file.Write(buf.Bytes())
 }
 
 func (b *BlockIndex) Lookup(id string) (*BlockIndexEntry){

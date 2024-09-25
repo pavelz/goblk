@@ -5,11 +5,13 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"goblk/fs"
 	"os"
 
-  "google.golang.org/protobuf/proto"
-  "goblk/proto/gopkg/entry"
+	"goblk/proto/gopkg/block"
+
+	//"google.golang.org/protobuf/proto"
 )
 
 
@@ -18,13 +20,32 @@ type Chainer struct {
     lastBlock int
 }
 
+type Entry struct {
+  From string
+  To string
+  Amount int64
+}
+
 type Block struct {
     Checksum string // checksum of all blocks and this one
     Previous string // prev block
     From string // does it matter for chain? not at its core
     To string
     Amount int
-    Entries []entry.Entry
+    Entries []Entry
+}
+
+// i have some reservations about this
+func (b *Block) toProtobuf() (block.Block){
+
+  blk := MapEntriesBlock(b.Entries, func(e *Entry)(*block.Entry){
+    return &block.Entry{From: e.From, To: e.To, Amount: int64(e.Amount)} 
+  })
+
+  return block.Block{
+    Entries: blk,
+  }
+
 }
 
 func NewChain() (*Chainer){
@@ -68,7 +89,7 @@ func LoadChain(path string) (*Chainer, error){
     }
 
     return &chain, nil
-}   
+}
 
 // get all block before this one 
 // filter out fields except Checksum
@@ -97,7 +118,6 @@ func getTextAllBlocksBefore(chain *Chainer, before *Block) (string){
 func (c Chainer) Hey(){
 }
 
-
 // this shall tigger mining? something like that.
 func (chain Chainer) Send(from string, to string, amount int) (*Block, error){
     // where from, where to.
@@ -106,7 +126,6 @@ func (chain Chainer) Send(from string, to string, amount int) (*Block, error){
     // From has to have enough Amount to send to To
 
     walletBalance,_ := chain.getAmount(from)
-
     if walletBalance - amount > 0 {
         return nil, errors.New("insufficient balance")
     }
@@ -161,6 +180,7 @@ func getNakedText(block Block) (string, error){
 // how to telescope in
 func ValidateChain(chain *Chainer) (*Block, error) {
     for _, block := range chain.chain {
+
         // calc hex for the block and all previous blocks
         text := getTextAllBlocksBefore(chain, &block)
         // exclude checksum from current calc. avoids off by one errors for first blocks.
@@ -182,9 +202,9 @@ func ValidateChain(chain *Chainer) (*Block, error) {
 }
 
 func (c Chainer) WriteChainProtobuf(path string){
-  for i, block :=  range(c.chain) {
-    message := proto.Marshal()// Hmmm i have to rework every record to be stored as protobuf i can't just get around it
-    
+  for _, block :=  range(c.chain) {
+    println("whoop")
+    fmt.Printf("o: %s\n", block.From)
   }
 }
 
@@ -200,4 +220,20 @@ func (c Chainer) WriteChain(path string) int {
 
 
     return 0
+}
+
+func MapEntriesChain(data []*block.Entry, f func(*block.Entry) Entry) []Entry {
+    var result []Entry
+    for _, e := range data {
+        result = append(result, f(e))
+    }
+    return result
+}
+
+func MapEntriesBlock(data []Entry, f func(*Entry) *block.Entry) []*block.Entry {
+    var result []*block.Entry
+    for _, e := range data {
+        result = append(result, f(&e))
+    }
+    return result
 }
