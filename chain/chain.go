@@ -97,7 +97,17 @@ func getTextAllBlocks(chain *Chainer) (string){
     return getTextAllBlocksBefore(chain, nil)
 }
 
-func getTextAllBlocksBefore(chain *Chainer, before *Block) (string){
+func getAllBlocksBefore[T any](chain *Chainer, before *Block, f func(Block) (*T,error) ) (string){
+  // append strings or byte seq
+  if err != nil {
+    os.Exit(-1)
+  }
+
+  return ""
+}
+
+func getTextAllBlocksBefore(chain *Chainer, before *Block)  (string){
+
     var text_block = ""
     var err error
     for _, block :=  range chain.chain {

@@ -1,4 +1,4 @@
-package fs
+ackage fs
 
 import (
 	"io"

@@ -82,6 +82,7 @@ func (x *Entry) Reset() {
 	*x = Entry{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_block_proto_msgTypes[1]
+    
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
